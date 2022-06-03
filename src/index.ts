@@ -1,5 +1,4 @@
 import { createContainer, DIContainerModule } from '@matchmakerjs/di';
-import { CachingKeyResolver, JwtValidator, RsaJwtSignatureValidator } from '@matchmakerjs/jwt-validator';
 import { addGracefulShutdown, startServer } from '@matchmakerjs/matchmaker';
 import { SecureRequestListener } from '@matchmakerjs/matchmaker-security';
 import {
@@ -14,8 +13,6 @@ import { Item } from './app/data/entities/item.entity';
 import argumentListResolver from './conf/argument-list-resolver';
 import router from './conf/router';
 import validator from './conf/validator';
-import { BearerTokenAccessClaimsResolverWithCookieSupport } from './security/access-claims-resolver';
-import { RemoteKeyResolver } from './security/remote-key-resolver';
 
 process.on('unhandledRejection', (reason) => {
     console.error('unhandledRejection:', reason);
@@ -36,20 +33,23 @@ Promise.all<DIContainerModule>([
     });
 
     try {
-        const keyResolver = new CachingKeyResolver(new RemoteKeyResolver(process.env.WEB_KEY_URL), {
-            cacheSize: parseInt(process.env.WEB_KEY_CACHE_SIZE, 10),
-        });
-        const jwtValidator = new JwtValidator(
-            new RsaJwtSignatureValidator(keyResolver),
-            parseInt(process.env.JWT_CLOCK_SKEW_MS || '1000', 10),
-        );
+        // const keyResolver = new CachingKeyResolver(new RemoteKeyResolver(process.env.WEB_KEY_URL), {
+        //     cacheSize: parseInt(process.env.WEB_KEY_CACHE_SIZE, 10),
+        // });
+        // const jwtValidator = new JwtValidator(
+        //     new RsaJwtSignatureValidator(keyResolver),
+        //     parseInt(process.env.JWT_CLOCK_SKEW_MS || '1000', 10),
+        // );
 
         const server = http.createServer(
             SecureRequestListener(router, {
                 container,
                 argumentListResolver,
                 validator,
-                accessClaimsResolver: new BearerTokenAccessClaimsResolverWithCookieSupport(jwtValidator),
+                // accessClaimsResolver: new BearerTokenAccessClaimsResolverWithCookieSupport(jwtValidator),
+                accessClaimsResolver: {
+                    getClaims: () => null,
+                },
                 serialize: (data: unknown) => JSON.stringify(instanceToPlain(data, { enableCircularCheck: true })),
             }),
         );

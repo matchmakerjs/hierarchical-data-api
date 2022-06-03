@@ -109,7 +109,7 @@ export class ItemController {
         if (page.offset) {
             offset = Number(page.offset || 0);
         }
-        if (limit === undefined && !filter.rootOnly && !filter.parent) {
+        if (limit === undefined && filter.rootOnly?.toString() !== 'true' && !filter.parent) {
             limit = MAX_LIMIT;
         }
 
@@ -131,7 +131,7 @@ export class ItemController {
                     name: `%${filter.name}%`,
                 });
             }
-        } else if (filter.rootOnly?.toString() == 'true') {
+        } else if (filter.rootOnly?.toString() === 'true') {
             qb.andWhere(`a.id IS NULL`);
             if (filter?.name) {
                 qb.andWhere(`(e.name ilike :name OR d.name ilike :name)`, {
