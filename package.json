@@ -1,0 +1,56 @@
+{
+  "name": "hierarchical-data-api",
+  "version": "0.0.1",
+  "description": "API for hierarchical data CRUD",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "tsc": "rimraf -rf dist && tsc",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write 'src/**/*.ts'",
+    "start": "nodemon --watch src -e ts --delay 2.5 --exec 'api-doc --input ./src/conf/router.ts --out ./openapi.json && ts-node -r dotenv/config src/index.ts'"
+  },
+  "keywords": [
+    "hierarchical",
+    "rest"
+  ],
+  "author": "Olaleye Afolabi",
+  "license": "ISC",
+  "engines": {
+    "node": ">=17.0.0"
+  },
+  "devDependencies": {
+    "@matchmakerjs/api-doc-cli": "0.0.1",
+    "@matchmakerjs/rest-assured": "0.0.1",
+    "@types/faker": "^5.5.9",
+    "@types/jest": "^27.5.1",
+    "@types/node": "^17.0.38",
+    "@types/validator": "^13.7.2",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "dotenv": "^16.0.1",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "faker": "^5.5.3",
+    "jest": "^28.1.0",
+    "nodemon": "^2.0.16",
+    "prettier": "^2.6.2",
+    "rimraf": "^3.0.2",
+    "sqlite3": "^5.0.8",
+    "ts-jest": "^28.0.3",
+    "ts-node": "^10.8.0",
+    "typescript": "^4.7.2"
+  },
+  "dependencies": {
+    "@matchmakerjs/di": "0.0.1",
+    "@matchmakerjs/jwt-validator": "0.0.1",
+    "@matchmakerjs/matchmaker": "0.0.1",
+    "@matchmakerjs/matchmaker-security": "0.0.1",
+    "@matchmakerjs/matchmaker-typeorm": "0.0.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.6"
+  }
+}
