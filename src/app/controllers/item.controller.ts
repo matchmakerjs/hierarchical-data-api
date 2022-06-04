@@ -126,19 +126,15 @@ export class ItemController {
             qb.andWhere(`pRel.derivedFrom IS NULL AND p.id=:parent`, {
                 parent: filter.parent,
             });
-            if (filter?.name) {
-                qb.andWhere(`(e.name ilike :name OR a.name ilike :name OR d.name ilike :name)`, {
-                    name: `%${filter.name}%`,
-                });
-            }
         } else if (filter.rootOnly?.toString() === 'true') {
             qb.andWhere(`a.id IS NULL`);
-            if (filter?.name) {
-                qb.andWhere(`(e.name ilike :name OR d.name ilike :name)`, {
-                    name: `%${filter.name}%`,
-                });
-            }
-        } else if (filter?.name) {
+        }
+        if (filter?.nameInPath) {
+            qb.andWhere(`(e.name ilike :nameInPath OR a.name ilike :nameInPath OR d.name ilike :nameInPath)`, {
+                nameInPath: `%${filter.nameInPath}%`,
+            });
+        }
+        if (filter?.name) {
             qb.andWhere(`e.name ilike :name`, {
                 name: `%${filter.name}%`,
             });
@@ -178,6 +174,7 @@ export class ItemController {
         let total = results.length;
         if (total && total == limit) {
             ({ total } = await qb.clone().select('count(DISTINCT e.id)', 'total').getRawOne());
+            total = Number(total);
         }
         return { limit, offset, total, results };
     }

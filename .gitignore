@@ -23,4 +23,4 @@ openapi.json
 
 temp/
 test-outputs/
-data/
+/data/
