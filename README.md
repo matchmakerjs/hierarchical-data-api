@@ -11,8 +11,6 @@ SWAGGER_UI_PATH=src/swagger-ui.html
 API_DOC_PATH=openapi.json
 
 TYPEORM_ENTITIES=src/app/data/entities/**/*.entity.ts
-
-WEB_KEY_URL=http://127.0.0.1:8080/auth-api/web-keys/{kid}
 ```
 
 ### Start application and visit URL
@@ -41,4 +39,4 @@ services:
 
 ## Build docker image
 `docker build . -t node-sqlite3:18.2.0-alpine`
-`npm run tsc && api-doc --input ./src/conf/router.ts --out ./openapi.json && docker-image --from 'node-sqlite3:18.2.0-alpine' --workDir /app-home/app --copy 'dist' --copy src/swagger-ui.html --copy openapi.json -t olaleye/hierarchical-data-api && docker push olaleye/hierarchical-data-api`
+`npm run tsc && api-doc --input ./src/conf/router.ts --out ./openapi.json && docker-image --from 'node-sqlite3:18.2.0-alpine' --workDir /app-home/app --copy 'dist' --copy src/swagger-ui.html --copy openapi.json --platform linux/amd64 -t olaleye/hierarchical-data-api && docker push olaleye/hierarchical-data-api`

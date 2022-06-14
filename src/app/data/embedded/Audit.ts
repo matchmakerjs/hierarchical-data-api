@@ -1,30 +1,30 @@
-import { BeforeInsert, BeforeUpdate, Column, DeleteDateColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, DeleteDateColumn } from "typeorm";
 
 export class Audit {
-    createdAt?: Date;
+  createdAt?: Date;
 
-    @Column({ nullable: true })
-    createdBy?: string;
+  @Column({ nullable: true })
+  createdBy?: string;
 
-    @Column({ nullable: true })
-    lastUpdatedAt?: Date;
+  @Column({ nullable: true })
+  lastUpdatedAt?: Date;
 
-    @Column({ nullable: true })
-    lastUpdatedBy?: string;
+  @Column({ nullable: true })
+  lastUpdatedBy?: string;
 
-    @DeleteDateColumn({ nullable: true })
-    deactivatedAt?: Date;
+  @DeleteDateColumn({ nullable: true })
+  deactivatedAt?: Date;
 
-    @Column({ nullable: true })
-    deactivatedBy?: string;
+  @Column({ nullable: true })
+  deactivatedBy?: string;
 
-    @BeforeInsert()
-    useNowAsCreationDate() {
-        this.createdAt = new Date();
-    }
+  @BeforeInsert()
+  useNowAsCreationDate() {
+    this.createdAt = new Date();
+  }
 
-    @BeforeUpdate()
-    useNowAsLastUpdateDate() {
-        this.lastUpdatedAt = new Date();
-    }
+  @BeforeUpdate()
+  useNowAsLastUpdateDate() {
+    this.lastUpdatedAt = new Date();
+  }
 }
