@@ -38,5 +38,5 @@ services:
 `docker-compose up` and open `http://127.0.0.1:5000`
 
 ## Build docker image
-`docker build . -t node-sqlite3:18.2.0-alpine`
+`docker build . --platform linux/amd64 -t node-sqlite3:18.2.0-alpine`
 `npm run tsc && api-doc --input ./src/conf/router.ts --out ./openapi.json && docker-image --from 'node-sqlite3:18.2.0-alpine' --workDir /app-home/app --copy 'dist' --copy src/swagger-ui.html --copy openapi.json --platform linux/amd64 -t olaleye/hierarchical-data-api && docker push olaleye/hierarchical-data-api`
