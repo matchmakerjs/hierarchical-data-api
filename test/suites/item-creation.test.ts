@@ -7,9 +7,9 @@ import {
 } from "@matchmakerjs/matchmaker-typeorm";
 import { randomUUID } from "crypto";
 import * as dotenv from "dotenv";
-import { ItemApiRequest } from "../src/app/data/dto/requests/item.request";
-import { ItemService } from "../src/app/services/item.service";
-import { TestServer } from "./conf/test-server";
+import { ItemApiRequest } from "../../src/app/data/dto/requests/item.request";
+import { ItemService } from "../../src/app/services/item.service";
+import { TestServer } from "../conf/test-server";
 
 describe("item upload", () => {
   jest.setTimeout(20000);

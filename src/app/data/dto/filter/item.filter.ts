@@ -4,4 +4,5 @@ export interface ItemFilter {
   parent: string;
   rootOnly: boolean;
   not: string[];
+  id: string[];
 }

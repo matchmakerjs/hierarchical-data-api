@@ -1,7 +1,7 @@
 import { createContainer } from "@matchmakerjs/di";
 import * as fs from "fs";
 import * as path from "path";
-import { TestServer } from "./conf/test-server";
+import { TestServer } from "../conf/test-server";
 
 describe("API Doc", () => {
   const [container, cleanUp] = createContainer({
@@ -12,8 +12,7 @@ describe("API Doc", () => {
 
   it("should retrieve api doc", async () => {
     process.env.API_DOC_PATH = path.resolve(
-      __dirname,
-      "..",
+      process.cwd(),
       "src",
       "swagger-ui.html"
     );

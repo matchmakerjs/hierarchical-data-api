@@ -8,9 +8,9 @@ import {
 import { randomUUID } from "crypto";
 import * as dotenv from "dotenv";
 import { EntityManager, In } from "typeorm";
-import { Item } from "../src/app/data/entities/item.entity";
-import { ItemService } from "../src/app/services/item.service";
-import { TestServer } from "./conf/test-server";
+import { Item } from "../../src/app/data/entities/item.entity";
+import { ItemService } from "../../src/app/services/item.service";
+import { TestServer } from "../conf/test-server";
 
 describe("item upload", () => {
   jest.setTimeout(20000);

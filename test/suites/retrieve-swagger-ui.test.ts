@@ -1,7 +1,7 @@
 import { createContainer } from "@matchmakerjs/di";
 import * as fs from "fs";
 import * as path from "path";
-import { TestServer } from "./conf/test-server";
+import { TestServer } from "../conf/test-server";
 
 describe("swagger UI", () => {
   const [container, cleanUp] = createContainer({
@@ -12,8 +12,7 @@ describe("swagger UI", () => {
 
   it("should retrieve swagger UI", async () => {
     process.env.SWAGGER_UI_PATH = path.resolve(
-      __dirname,
-      "..",
+      process.cwd(),
       "src",
       "swagger-ui.html"
     );

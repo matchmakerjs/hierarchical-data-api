@@ -31,8 +31,8 @@ export class ItemRelationshipService {
     const relations: ItemRelationship[] = [];
 
     const parentRelationship = new ItemRelationship();
-    parentRelationship.descendant = entity;
-    parentRelationship.ancestor = parent;
+    parentRelationship.source = entity;
+    parentRelationship.target = parent;
     parentRelationship.distance = 0;
     parentRelationship.audit.createdBy = requestMetadata.userId;
     await this.entityManager.save(parentRelationship);
@@ -40,12 +40,12 @@ export class ItemRelationshipService {
     relations.push(parentRelationship);
 
     for (const ancestor of ancestors) {
-      if (ancestor.descendant.id !== parent.id) {
+      if (ancestor.source.id !== parent.id) {
         continue;
       }
       const parentLocation = new ItemRelationship();
-      parentLocation.descendant = entity;
-      parentLocation.ancestor = ancestor.ancestor;
+      parentLocation.source = entity;
+      parentLocation.target = ancestor.target;
       parentLocation.derivedFrom = ancestor;
       parentLocation.distance = ancestor.distance + 1;
       parentLocation.audit.createdBy = requestMetadata.userId;
@@ -54,7 +54,7 @@ export class ItemRelationshipService {
     }
     entity.ancestors = relations
       .sort((a, b) => a.distance - b.distance)
-      .map((it) => it.ancestor);
+      .map((it) => it.target);
     return relations;
   }
 
@@ -64,8 +64,8 @@ export class ItemRelationshipService {
     }
     return this.entityManager
       .createQueryBuilder(ItemRelationship, "a_c")
-      .innerJoinAndSelect("a_c.ancestor", "a")
-      .innerJoinAndSelect("a_c.descendant", "c")
+      .innerJoinAndSelect("a_c.target", "a")
+      .innerJoinAndSelect("a_c.source", "c")
       .leftJoinAndSelect("a_c.derivedFrom", "df")
       .where("(df.id IS NULL OR df.deactivatedAt IS NULL)")
       .andWhere("(a.id IN (:...ids) OR c.id IN (:...ids))", { ids })
@@ -79,8 +79,8 @@ export class ItemRelationshipService {
     }
     return this.entityManager
       .createQueryBuilder(ItemRelationship, "a_c")
-      .innerJoinAndSelect("a_c.ancestor", "a")
-      .innerJoinAndSelect("a_c.descendant", "c")
+      .innerJoinAndSelect("a_c.target", "a")
+      .innerJoinAndSelect("a_c.source", "c")
       .leftJoin("a_c.derivedFrom", "df")
       .where("(df.id IS NULL OR df.deactivatedAt IS NULL)")
       .andWhere("c.id IN (:...ids)", { ids })
@@ -94,8 +94,8 @@ export class ItemRelationshipService {
     }
     return this.entityManager
       .createQueryBuilder(ItemRelationship, "a_c")
-      .innerJoinAndSelect("a_c.ancestor", "a")
-      .innerJoinAndSelect("a_c.descendant", "c")
+      .innerJoinAndSelect("a_c.target", "a")
+      .innerJoinAndSelect("a_c.source", "c")
       .leftJoin("a_c.derivedFrom", "df")
       .where("df.id IS NULL")
       .andWhere("c.id IN (:...ids)", { ids })
@@ -108,8 +108,8 @@ export class ItemRelationshipService {
     }
     return this.entityManager
       .createQueryBuilder(ItemRelationship, "a_c")
-      .innerJoinAndSelect("a_c.ancestor", "a")
-      .innerJoinAndSelect("a_c.descendant", "c")
+      .innerJoinAndSelect("a_c.target", "a")
+      .innerJoinAndSelect("a_c.source", "c")
       .leftJoin("a_c.derivedFrom", "df")
       .where("df.id IS NULL")
       .andWhere("a.id IN (:...ids)", { ids })
@@ -123,8 +123,8 @@ export class ItemRelationshipService {
     }
     const results = await this.entityManager
       .createQueryBuilder(ItemRelationship, "a_c")
-      .innerJoinAndSelect("a_c.ancestor", "a")
-      .innerJoinAndSelect("a_c.descendant", "c")
+      .innerJoinAndSelect("a_c.target", "a")
+      .innerJoinAndSelect("a_c.source", "c")
       .leftJoin("a_c.derivedFrom", "df")
       .where("(df.id IS NULL)")
       .andWhere("a.id IN (:...ids)", { ids })

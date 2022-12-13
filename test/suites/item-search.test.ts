@@ -7,13 +7,13 @@ import {
 import { randomUUID } from "crypto";
 import * as dotenv from "dotenv";
 import { EntityManager } from "typeorm";
-import { ItemApiRequest } from "../src/app/data/dto/requests/item.request";
-import { ItemApiResponse } from "../src/app/data/dto/responses/item.response";
-import { SearchResult } from "../src/app/data/dto/responses/search-result";
-import { ItemRelationship } from "../src/app/data/entities/item-relationship.entity";
-import { Item } from "../src/app/data/entities/item.entity";
-import { ItemService } from "../src/app/services/item.service";
-import { TestServer } from "./conf/test-server";
+import { ItemApiRequest } from "../../src/app/data/dto/requests/item.request";
+import { ItemApiResponse } from "../../src/app/data/dto/responses/item.response";
+import { SearchResult } from "../../src/app/data/dto/responses/search-result";
+import { ItemRelationship } from "../../src/app/data/entities/item-relationship.entity";
+import { Item } from "../../src/app/data/entities/item.entity";
+import { ItemService } from "../../src/app/services/item.service";
+import { TestServer } from "../conf/test-server";
 
 describe("item search", () => {
   jest.setTimeout(20000);

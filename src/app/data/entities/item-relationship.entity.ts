@@ -8,10 +8,10 @@ export class ItemRelationship {
   id: number;
 
   @ManyToOne(() => Item, { nullable: false })
-  ancestor: Item;
+  target: Item;
 
   @ManyToOne(() => Item, { nullable: false })
-  descendant: Item;
+  source: Item;
 
   @ManyToOne(() => ItemRelationship, { nullable: true })
   derivedFrom: ItemRelationship;

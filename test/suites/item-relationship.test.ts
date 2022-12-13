@@ -8,13 +8,13 @@ import {
 import { randomUUID } from "crypto";
 import * as dotenv from "dotenv";
 import { EntityManager, In } from "typeorm";
-import { ItemApiRequest } from "../src/app/data/dto/requests/item.request";
-import { ItemApiResponse } from "../src/app/data/dto/responses/item.response";
-import { ItemRelationship } from "../src/app/data/entities/item-relationship.entity";
-import { Item } from "../src/app/data/entities/item.entity";
-import { ItemRelationshipService } from "../src/app/services/item-relationship.service";
-import { ItemService } from "../src/app/services/item.service";
-import { TestServer } from "./conf/test-server";
+import { ItemApiRequest } from "../../src/app/data/dto/requests/item.request";
+import { ItemApiResponse } from "../../src/app/data/dto/responses/item.response";
+import { ItemRelationship } from "../../src/app/data/entities/item-relationship.entity";
+import { Item } from "../../src/app/data/entities/item.entity";
+import { ItemRelationshipService } from "../../src/app/services/item-relationship.service";
+import { ItemService } from "../../src/app/services/item.service";
+import { TestServer } from "../conf/test-server";
 
 describe("item relationship", () => {
   jest.setTimeout(20000);
@@ -59,7 +59,7 @@ describe("item relationship", () => {
       .getInstance(ItemRelationshipService)
       .getAncestors([list.pop()]);
     for (let i = 0; i < ancestors.length; i++) {
-      expect(ancestors[i].ancestor.id).toEqual(list.pop());
+      expect(ancestors[i].target.id).toEqual(list.pop());
       expect(ancestors[i].distance).toBe(i);
     }
   });
@@ -85,7 +85,7 @@ describe("item relationship", () => {
       .getInstance(EntityManager)
       .find(ItemRelationship, {
         where: {
-          descendant: {
+          source: {
             id: In([a.id, a1.id]),
           },
         },
@@ -93,14 +93,10 @@ describe("item relationship", () => {
       });
     expect(list.length).toBe(3);
     expect(
-      list
-        .filter((it) => it.descendant.toString() === a1.id)
-        .map((it) => it.ancestor)
+      list.filter((it) => it.source.toString() === a1.id).map((it) => it.target)
     ).toEqual([a.id, b.id]);
     expect(
-      list
-        .filter((it) => it.descendant.toString() === a.id)
-        .map((it) => it.ancestor)
+      list.filter((it) => it.source.toString() === a.id).map((it) => it.target)
     ).toEqual([b.id]);
   });
 
@@ -153,7 +149,7 @@ describe("item relationship", () => {
       .getInstance(ItemRelationshipService)
       .getAncestors([last.id]);
     expect(ancestors.length).toBe(requests.length - start);
-    expect(ancestors.at(-1).ancestor.id).toBe(entities[start - 1].id);
+    expect(ancestors.at(-1).target.id).toBe(entities[start - 1].id);
   });
 
   it("should prevent cyclic dependency", async () => {

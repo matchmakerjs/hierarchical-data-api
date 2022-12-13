@@ -48,13 +48,11 @@ export class ItemService {
       RequestMetadata as ConstructorFunction<RequestMetadata>
     );
     const lineage = await this.relationshipService.getLineage([entity.id]);
-    const currentAncestors = lineage.filter(
-      (it) => it.descendant.id === entity.id
-    );
+    const currentAncestors = lineage.filter((it) => it.source.id === entity.id);
     if (
       (!currentAncestors.length && data.parentId) ||
       (currentAncestors.length &&
-        (!data.parentId || currentAncestors[0].ancestor.id !== data.parentId))
+        (!data.parentId || currentAncestors[0].target.id !== data.parentId))
     ) {
       const parent =
         data.parentId &&
@@ -70,12 +68,12 @@ export class ItemService {
         entity,
         parent,
         currentAncestors,
-        lineage.filter((it) => it.ancestor.id === entity.id)
+        lineage.filter((it) => it.target.id === entity.id)
       );
     } else {
       entity.ancestors = currentAncestors
         .sort((a, b) => a.distance - b.distance)
-        .map((it) => it.ancestor);
+        .map((it) => it.target);
     }
     entity.name = StringUtils.normalizeSpace(data.name);
     entity.description = StringUtils.normalizeSpace(data.description);
@@ -94,8 +92,8 @@ export class ItemService {
     await this.entityManager.save(entity);
     const children = this.entityManager
       .createQueryBuilder(ItemRelationship, "ac")
-      .leftJoin("ac.descendant", "c")
-      .where(`ac.ancestor = :id`)
+      .leftJoin("ac.source", "c")
+      .where(`ac.target = :id`)
       .select("c.id")
       .getSql();
     await this.entityManager
@@ -126,14 +124,12 @@ export class ItemService {
     const newAncestors = !newParent
       ? []
       : await this.relationshipService.getAncestors([newParent.id]);
-    if (newAncestors.findIndex((it) => it.ancestor.id === entity.id) >= 0) {
+    if (newAncestors.findIndex((it) => it.target.id === entity.id) >= 0) {
       throw new ErrorResponse(400, {
         message: `Category ${newParent.name} is a sub-category of ${entity.name}`,
       });
     }
-    const descendantIds = relationshipWithDescendants.map(
-      (it) => it.descendant.id
-    );
+    const descendantIds = relationshipWithDescendants.map((it) => it.source.id);
     if (relationshipWithAncestors.length) {
       await this.entityManager
         .createQueryBuilder()
@@ -144,10 +140,10 @@ export class ItemService {
             deactivatedBy: requestMetadata.userId,
           },
         })
-        .where("ancestor IN (:...ancestors)", {
-          ancestors: relationshipWithAncestors.map((it) => it.ancestor.id),
+        .where("target IN (:...ancestors)", {
+          ancestors: relationshipWithAncestors.map((it) => it.target.id),
         })
-        .andWhere("descendant IN (:...descendants)", {
+        .andWhere("source IN (:...descendants)", {
           descendants: [entity.id, ...descendantIds],
         })
         .callListeners(false)
@@ -163,8 +159,8 @@ export class ItemService {
       for (const descendantRelationship of relationshipWithDescendants) {
         for (const ancestorRelationship of relationships) {
           const relationship = new ItemRelationship();
-          relationship.ancestor = ancestorRelationship.ancestor;
-          relationship.descendant = descendantRelationship.descendant;
+          relationship.target = ancestorRelationship.target;
+          relationship.source = descendantRelationship.source;
           relationship.derivedFrom =
             descendantRelationship.derivedFrom || descendantRelationship;
           relationship.distance =
@@ -207,21 +203,21 @@ export class ItemService {
       .getMany();
   }
 
-  async loadFully(businessCategories: Item[]) {
-    if (!businessCategories?.length) return;
+  async loadFully(items: Item[]) {
+    if (!items?.length) return;
 
     const ancestors = await this.relationshipService.getAncestors(
-      businessCategories.map((it) => it.id)
+      items.map((it) => it.id)
     );
     const sibblings = await this.relationshipService.getChildren(
-      ancestors.filter((it) => it.distance === 0).map((it) => it.ancestor.id)
+      ancestors.filter((it) => it.distance === 0).map((it) => it.target.id)
     );
 
-    businessCategories.forEach((item) => {
+    items.forEach((item) => {
       item.ancestors = ancestors
-        .filter((it) => it.descendant.id === item.id)
+        .filter((it) => it.source.id === item.id)
         .sort((a, b) => a.distance - b.distance)
-        .map((it) => it.ancestor);
+        .map((it) => it.target);
       for (let i = 0; i < item.ancestors.length - 1; i++) {
         item.ancestors[i].parentId = item.ancestors[i + 1].id;
       }
@@ -230,12 +226,11 @@ export class ItemService {
         item.sibblings = sibblings
           .filter(
             (it) =>
-              it.descendant.id !== item.id &&
-              it.ancestor.id === item.ancestors[0].id
+              it.source.id !== item.id && it.target.id === item.ancestors[0].id
           )
           .map((it) => {
-            it.descendant.parentId = it.ancestor.id;
-            return it.descendant;
+            it.source.parentId = it.target.id;
+            return it.source;
           });
       }
     });
